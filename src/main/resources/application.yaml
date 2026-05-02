@@ -1,0 +1,13 @@
+---
+spring:
+  application:
+    name: "rest-clients"
+rest-clients:
+  clients:
+  - name: "client1"
+    base-url: "http://localhost:8081"
+    connect-timeout: 5000
+    read-timeout: 10000
+    interceptors:
+    - bean-name: "loggingInterceptor"
+      order: 1
