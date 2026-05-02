@@ -22,6 +22,7 @@ public class RestClientProperties {
     private String baseUrl;
     private Integer connectTimeout = 5000;
     private Integer readTimeout = 10000;
+    private String requestFactoryBean;
     private List<InterceptorConfig> interceptors = new ArrayList<>();
 
     public String getName() {
@@ -62,6 +63,14 @@ public class RestClientProperties {
 
     public void setInterceptors(List<InterceptorConfig> interceptors) {
       this.interceptors = interceptors;
+    }
+
+    public String getRequestFactoryBean() {
+      return requestFactoryBean;
+    }
+
+    public void setRequestFactoryBean(String requestFactoryBean) {
+      this.requestFactoryBean = requestFactoryBean;
     }
   }
 
