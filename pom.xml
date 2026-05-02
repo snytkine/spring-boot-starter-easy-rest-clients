@@ -30,7 +30,8 @@
     <java.version>21</java.version>
     <spotless.version>2.43.0</spotless.version>
     <jacoco.version>0.8.12</jacoco.version>
-    <jacoco.minimum.coverage>0.70</jacoco.minimum.coverage>
+    <jacoco.minimum.instruction.coverage>0.80</jacoco.minimum.instruction.coverage>
+    <jacoco.minimum.branch.coverage>0.70</jacoco.minimum.branch.coverage>
   </properties>
   <dependencies>
     <dependency>
@@ -172,12 +173,12 @@
                     <limit>
                       <counter>INSTRUCTION</counter>
                       <value>COVEREDRATIO</value>
-                      <minimum>${jacoco.minimum.coverage}</minimum>
+                      <minimum>${jacoco.minimum.instruction.coverage}</minimum>
                     </limit>
                     <limit>
                       <counter>BRANCH</counter>
                       <value>COVEREDRATIO</value>
-                      <minimum>${jacoco.minimum.coverage}</minimum>
+                      <minimum>${jacoco.minimum.branch.coverage}</minimum>
                     </limit>
                   </limits>
                 </rule>
