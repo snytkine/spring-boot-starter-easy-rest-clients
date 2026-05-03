@@ -10,6 +10,7 @@ import java.util.List;
 import net.snytkine.springboot.rest_clients.config.properties.RestClientProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -87,9 +88,8 @@ class RestClientFactoryBeanTest {
     factoryBean.setApplicationContext(applicationContext);
 
     assertThatThrownBy(() -> factoryBean.getObject())
-        .isInstanceOf(IllegalStateException.class)
-        .hasMessageContaining("Failed to resolve request factory bean 'missingFactory'")
-        .hasMessageContaining("testClient");
+        .isInstanceOf(BeanCreationException.class)
+        .hasMessageContaining("Failed to resolve request factory bean 'missingFactory'");
   }
 
   @Test
@@ -130,9 +130,8 @@ class RestClientFactoryBeanTest {
     factoryBean.setApplicationContext(applicationContext);
 
     assertThatThrownBy(() -> factoryBean.getObject())
-        .isInstanceOf(IllegalArgumentException.class)
-        .hasMessageContaining("must be a non-empty string")
-        .hasMessageContaining("testClient");
+        .isInstanceOf(BeanCreationException.class)
+        .hasMessageContaining("must be a non-empty string");
   }
 
   @Test
@@ -150,9 +149,8 @@ class RestClientFactoryBeanTest {
     factoryBean.setApplicationContext(applicationContext);
 
     assertThatThrownBy(() -> factoryBean.getObject())
-        .isInstanceOf(IllegalStateException.class)
-        .hasMessageContaining("Failed to resolve interceptor bean 'missingInterceptor'")
-        .hasMessageContaining("testClient");
+        .isInstanceOf(BeanCreationException.class)
+        .hasMessageContaining("Failed to resolve interceptor bean 'missingInterceptor'");
   }
 
   @Test

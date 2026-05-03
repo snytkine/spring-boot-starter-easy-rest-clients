@@ -2,6 +2,7 @@ package net.snytkine.springboot.rest_clients.config;
 
 import lombok.extern.slf4j.Slf4j;
 import net.snytkine.springboot.rest_clients.config.properties.RestClientProperties;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.EnvironmentAware;
@@ -91,16 +92,16 @@ public class RestClientBeanDefinitionRegistrar
    * <p><b>Error Handling:</b>
    *
    * <ul>
-   *   <li>If a client configuration is missing the {@code name} property, an {@link
-   *       IllegalArgumentException} is thrown
+   *   <li>If a client configuration is missing the {@code name} property, a {@link
+   *       BeanCreationException} is thrown
    *   <li>Debug-level logging is performed throughout the registration process
    *   <li>Error-level logging is performed when validation fails
    * </ul>
    *
    * @param importingClassMetadata metadata about the importing configuration class (not used)
    * @param registry the bean definition registry to register RestClient beans with
-   * @throws IllegalArgumentException if any client configuration is missing the required {@code
-   *     name} property
+   * @throws BeanCreationException if any client configuration is missing the required {@code name}
+   *     property
    * @see RestClientFactoryBean
    * @see RestClientProperties.ClientConfig
    */
@@ -127,8 +128,8 @@ public class RestClientBeanDefinitionRegistrar
     for (RestClientProperties.ClientConfig clientConfig : properties.getClients()) {
       if (clientConfig.getName() == null || clientConfig.getName().isBlank()) {
         log.error("RestClient configuration is missing required 'name' property");
-        throw new IllegalArgumentException(
-            "RestClient configuration must have a non-empty 'name' property");
+        throw new BeanCreationException(
+            "unknown", "RestClient configuration must have a non-empty 'name' property");
       }
 
       String beanName = clientConfig.getName();

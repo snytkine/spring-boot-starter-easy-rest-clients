@@ -6,6 +6,7 @@ import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import net.snytkine.springboot.rest_clients.config.properties.RestClientProperties;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -100,10 +101,10 @@ import org.springframework.web.client.RestClient;
  * <p><b>Error Handling:</b>
  *
  * <ul>
- *   <li>If an interceptor bean name in the list is null or blank, an {@link
- *       IllegalArgumentException} is thrown
- *   <li>If an interceptor or request factory bean cannot be resolved from the ApplicationContext,
- *       an {@link IllegalStateException} is thrown
+ *   <li>If an interceptor bean name in the list is null or blank, a {@link BeanCreationException}
+ *       is thrown
+ *   <li>If an interceptor or request factory bean cannot be resolved from the ApplicationContext, a
+ *       {@link BeanCreationException} is thrown
  *   <li>All errors are logged at the error level before throwing exceptions
  * </ul>
  *
@@ -177,9 +178,8 @@ public class RestClientFactoryBean implements FactoryBean<RestClient>, Applicati
    * </ul>
    *
    * @return a fully configured RestClient instance
-   * @throws IllegalArgumentException if an interceptor bean name in the list is null or blank
-   * @throws IllegalStateException if an interceptor or request factory bean cannot be resolved from
-   *     the ApplicationContext
+   * @throws BeanCreationException if an interceptor bean name is null/blank or if any interceptor
+   *     or request factory bean cannot be resolved from the ApplicationContext
    * @see #resolveRequestFactory()
    * @see #resolveInterceptors()
    */
@@ -279,7 +279,7 @@ public class RestClientFactoryBean implements FactoryBean<RestClient>, Applicati
    * </ul>
    *
    * @return the configured ClientHttpRequestFactory, or null to use RestClient's default
-   * @throws IllegalStateException if a custom request factory bean is specified but cannot be
+   * @throws BeanCreationException if a custom request factory bean is specified but cannot be
    *     resolved from the ApplicationContext
    */
   private org.springframework.http.client.ClientHttpRequestFactory resolveRequestFactory() {
@@ -307,12 +307,9 @@ public class RestClientFactoryBean implements FactoryBean<RestClient>, Applicati
             clientConfig.getRequestFactoryBean(),
             clientConfig.getName(),
             e.getMessage());
-        throw new IllegalStateException(
-            "Failed to resolve request factory bean '"
-                + clientConfig.getRequestFactoryBean()
-                + "' for RestClient '"
-                + clientConfig.getName()
-                + "'",
+        throw new BeanCreationException(
+            clientConfig.getName(),
+            "Failed to resolve request factory bean '" + clientConfig.getRequestFactoryBean() + "'",
             e);
       }
     }
@@ -362,18 +359,17 @@ public class RestClientFactoryBean implements FactoryBean<RestClient>, Applicati
    * <p><b>Validation:</b>
    *
    * <p>Each entry in the interceptors list must be a non-empty bean name. If a blank or null name
-   * is found, an {@link IllegalArgumentException} is thrown.
+   * is found, a {@link BeanCreationException} is thrown.
    *
    * <p><b>Bean Resolution:</b>
    *
    * <p>Each interceptor is resolved from the ApplicationContext by name and must implement {@link
-   * ClientHttpRequestInterceptor}. If the bean cannot be found or is of the wrong type, an {@link
-   * IllegalStateException} is thrown.
+   * ClientHttpRequestInterceptor}. If the bean cannot be found or is of the wrong type, a {@link
+   * BeanCreationException} is thrown.
    *
    * @return a list of resolved ClientHttpRequestInterceptor beans in declaration order
-   * @throws IllegalArgumentException if any interceptor bean name is null or blank
-   * @throws IllegalStateException if any interceptor bean cannot be resolved from the
-   *     ApplicationContext
+   * @throws BeanCreationException if any interceptor bean name is null/blank or if any interceptor
+   *     bean cannot be resolved from the ApplicationContext
    */
   private List<ClientHttpRequestInterceptor> resolveInterceptors() {
     List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
@@ -381,10 +377,8 @@ public class RestClientFactoryBean implements FactoryBean<RestClient>, Applicati
       if (beanName == null || beanName.isBlank()) {
         log.error(
             "Interceptor bean name for RestClient '{}' must not be blank", clientConfig.getName());
-        throw new IllegalArgumentException(
-            "Interceptor bean name for RestClient '"
-                + clientConfig.getName()
-                + "' must be a non-empty string");
+        throw new BeanCreationException(
+            clientConfig.getName(), "Interceptor bean name must be a non-empty string");
       }
 
       log.debug(
@@ -405,13 +399,8 @@ public class RestClientFactoryBean implements FactoryBean<RestClient>, Applicati
             beanName,
             clientConfig.getName(),
             e.getMessage());
-        throw new IllegalStateException(
-            "Failed to resolve interceptor bean '"
-                + beanName
-                + "' for RestClient '"
-                + clientConfig.getName()
-                + "'",
-            e);
+        throw new BeanCreationException(
+            clientConfig.getName(), "Failed to resolve interceptor bean '" + beanName + "'", e);
       }
     }
 

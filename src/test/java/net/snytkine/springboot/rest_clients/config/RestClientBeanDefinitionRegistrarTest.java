@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mock;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.SimpleBeanDefinitionRegistry;
 import org.springframework.core.type.AnnotationMetadata;
@@ -59,7 +60,7 @@ class RestClientBeanDefinitionRegistrarTest {
     registrar.setEnvironment(environment);
 
     assertThatThrownBy(() -> registrar.registerBeanDefinitions(metadata, registry))
-        .isInstanceOf(IllegalArgumentException.class)
+        .isInstanceOf(BeanCreationException.class)
         .hasMessageContaining("RestClient configuration must have a non-empty 'name' property");
   }
 
@@ -72,7 +73,7 @@ class RestClientBeanDefinitionRegistrarTest {
     registrar.setEnvironment(environment);
 
     assertThatThrownBy(() -> registrar.registerBeanDefinitions(metadata, registry))
-        .isInstanceOf(IllegalArgumentException.class)
+        .isInstanceOf(BeanCreationException.class)
         .hasMessageContaining("RestClient configuration must have a non-empty 'name' property");
   }
 
