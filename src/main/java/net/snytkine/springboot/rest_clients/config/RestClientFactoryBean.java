@@ -2,7 +2,6 @@ package net.snytkine.springboot.rest_clients.config;
 
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import net.snytkine.springboot.rest_clients.config.properties.RestClientProperties;
@@ -43,8 +42,8 @@ import org.springframework.web.client.RestClient;
  *       request-factory-bean}, otherwise creates a default {@link
  *       org.springframework.http.client.JdkClientHttpRequestFactory} with configured timeouts
  *   <li><b>Timeouts:</b> Configures connect and read timeouts (defaults: 5000ms and 10000ms)
- *   <li><b>Interceptors:</b> Resolves and applies {@link ClientHttpRequestInterceptor} beans in
- *       order based on the {@code order} property
+ *   <li><b>Interceptors:</b> Resolves and applies {@link ClientHttpRequestInterceptor} beans in the
+ *       order they are declared in the configuration
  * </ul>
  *
  * <p><b>Default Request Factory:</b>
@@ -83,11 +82,10 @@ import org.springframework.web.client.RestClient;
  *
  * <p><b>Interceptor Resolution:</b>
  *
- * <p>Interceptors are resolved from the ApplicationContext by bean name and applied in order based
- * on the {@code order} property (lower values have higher priority). Interceptors without an
- * explicit order are assigned {@link Integer#MAX_VALUE} to place them last.
+ * <p>Interceptors are resolved from the ApplicationContext by bean name and applied in the order
+ * they are declared in the configuration list.
  *
- * <p>Example configuration with ordered interceptors:
+ * <p>Example configuration with interceptors:
  *
  * <pre>
  * rest-clients:
@@ -95,16 +93,14 @@ import org.springframework.web.client.RestClient;
  *     - name: apiClient
  *       base-url: https://api.example.com
  *       interceptors:
- *         - bean-name: loggingInterceptor
- *           order: 1
- *         - bean-name: authInterceptor
- *           order: 2
+ *         - loggingInterceptor
+ *         - authInterceptor
  * </pre>
  *
  * <p><b>Error Handling:</b>
  *
  * <ul>
- *   <li>If an interceptor is missing the {@code bean-name} property, an {@link
+ *   <li>If an interceptor bean name in the list is null or blank, an {@link
  *       IllegalArgumentException} is thrown
  *   <li>If an interceptor or request factory bean cannot be resolved from the ApplicationContext,
  *       an {@link IllegalStateException} is thrown
@@ -181,8 +177,7 @@ public class RestClientFactoryBean implements FactoryBean<RestClient>, Applicati
    * </ul>
    *
    * @return a fully configured RestClient instance
-   * @throws IllegalArgumentException if an interceptor configuration is missing the required {@code
-   *     bean-name} property
+   * @throws IllegalArgumentException if an interceptor bean name in the list is null or blank
    * @throws IllegalStateException if an interceptor or request factory bean cannot be resolved from
    *     the ApplicationContext
    * @see #resolveRequestFactory()
@@ -357,119 +352,62 @@ public class RestClientFactoryBean implements FactoryBean<RestClient>, Applicati
   }
 
   /**
-   * Resolves and orders the {@link ClientHttpRequestInterceptor} beans for the RestClient.
+   * Resolves the {@link ClientHttpRequestInterceptor} beans for the RestClient in declaration
+   * order.
    *
-   * <p>This method processes the interceptor configurations defined for the client and resolves the
-   * actual interceptor beans from the ApplicationContext. It performs the following steps:
-   *
-   * <ol>
-   *   <li>Creates a copy of the interceptor configurations list
-   *   <li>Sorts the interceptors by the {@code order} property (lower values have higher priority)
-   *   <li>For each interceptor configuration:
-   *       <ul>
-   *         <li>Validates that the {@code bean-name} property is present and non-empty
-   *         <li>Resolves the interceptor bean from the ApplicationContext by name
-   *         <li>Adds the resolved interceptor to the result list
-   *       </ul>
-   * </ol>
-   *
-   * <p><b>Interceptor Ordering:</b>
-   *
-   * <p>Interceptors are sorted by their {@code order} property before being applied to the
-   * RestClient. The ordering follows these rules:
-   *
-   * <ul>
-   *   <li>Lower order values have higher priority and execute first in the request chain
-   *   <li>Interceptors without an explicit {@code order} are assigned {@link Integer#MAX_VALUE},
-   *       placing them last in the chain
-   *   <li>Interceptors with the same order value maintain their configuration order
-   * </ul>
-   *
-   * <p>For example, with this configuration:
-   *
-   * <pre>
-   * interceptors:
-   *   - bean-name: loggingInterceptor
-   *     order: 1
-   *   - bean-name: authInterceptor
-   *     order: 2
-   *   - bean-name: metricsInterceptor
-   * </pre>
-   *
-   * <p>The execution order will be: loggingInterceptor → authInterceptor → metricsInterceptor
+   * <p>This method processes the interceptor bean names defined for the client and resolves the
+   * actual interceptor beans from the ApplicationContext. Interceptors are applied in the order
+   * they appear in the configuration list.
    *
    * <p><b>Validation:</b>
    *
-   * <p>Each interceptor configuration must have a non-empty {@code bean-name} property. If this
-   * validation fails, an error is logged and an {@link IllegalArgumentException} is thrown to fail
-   * fast rather than silently skipping the interceptor.
+   * <p>Each entry in the interceptors list must be a non-empty bean name. If a blank or null name
+   * is found, an {@link IllegalArgumentException} is thrown.
    *
    * <p><b>Bean Resolution:</b>
    *
    * <p>Each interceptor is resolved from the ApplicationContext by name and must implement {@link
-   * ClientHttpRequestInterceptor}. If the bean cannot be found or is of the wrong type, an error is
-   * logged and an {@link IllegalStateException} is thrown.
+   * ClientHttpRequestInterceptor}. If the bean cannot be found or is of the wrong type, an {@link
+   * IllegalStateException} is thrown.
    *
-   * <p><b>Debug Logging:</b>
-   *
-   * <p>This method logs the following at debug level:
-   *
-   * <ul>
-   *   <li>When resolving each interceptor bean (with bean name and order)
-   *   <li>When successfully resolving each interceptor (with bean name and type)
-   * </ul>
-   *
-   * @return a list of resolved and ordered ClientHttpRequestInterceptor beans
-   * @throws IllegalArgumentException if any interceptor configuration is missing the required
-   *     {@code bean-name} property
+   * @return a list of resolved ClientHttpRequestInterceptor beans in declaration order
+   * @throws IllegalArgumentException if any interceptor bean name is null or blank
    * @throws IllegalStateException if any interceptor bean cannot be resolved from the
    *     ApplicationContext
    */
   private List<ClientHttpRequestInterceptor> resolveInterceptors() {
-    List<RestClientProperties.InterceptorConfig> interceptorConfigs =
-        new ArrayList<>(clientConfig.getInterceptors());
-
-    // Sort by order
-    interceptorConfigs.sort(
-        Comparator.comparing(
-            config -> config.getOrder() != null ? config.getOrder() : Integer.MAX_VALUE));
-
     List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
-    for (RestClientProperties.InterceptorConfig config : interceptorConfigs) {
-      if (config.getBeanName() == null || config.getBeanName().isBlank()) {
+    for (String beanName : clientConfig.getInterceptors()) {
+      if (beanName == null || beanName.isBlank()) {
         log.error(
-            "Interceptor configuration for RestClient '{}' is missing required 'bean-name' property",
-            clientConfig.getName());
+            "Interceptor bean name for RestClient '{}' must not be blank", clientConfig.getName());
         throw new IllegalArgumentException(
-            "Interceptor configuration for RestClient '"
+            "Interceptor bean name for RestClient '"
                 + clientConfig.getName()
-                + "' must have a non-empty 'bean-name' property");
+                + "' must be a non-empty string");
       }
 
       log.debug(
-          "Resolving interceptor bean '{}' with order {} for RestClient '{}'",
-          config.getBeanName(),
-          config.getOrder(),
-          clientConfig.getName());
+          "Resolving interceptor bean '{}' for RestClient '{}'", beanName, clientConfig.getName());
 
       try {
         ClientHttpRequestInterceptor interceptor =
-            applicationContext.getBean(config.getBeanName(), ClientHttpRequestInterceptor.class);
+            applicationContext.getBean(beanName, ClientHttpRequestInterceptor.class);
         interceptors.add(interceptor);
         log.debug(
             "Successfully resolved interceptor bean '{}' of type {} for RestClient '{}'",
-            config.getBeanName(),
+            beanName,
             interceptor.getClass().getSimpleName(),
             clientConfig.getName());
       } catch (BeansException e) {
         log.error(
             "Failed to resolve interceptor bean '{}' for RestClient '{}': {}",
-            config.getBeanName(),
+            beanName,
             clientConfig.getName(),
             e.getMessage());
         throw new IllegalStateException(
             "Failed to resolve interceptor bean '"
-                + config.getBeanName()
+                + beanName
                 + "' for RestClient '"
                 + clientConfig.getName()
                 + "'",

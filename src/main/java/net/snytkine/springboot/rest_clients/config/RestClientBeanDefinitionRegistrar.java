@@ -31,8 +31,7 @@ import org.springframework.core.type.AnnotationMetadata;
  *       connect-timeout: 5000
  *       read-timeout: 10000
  *       interceptors:
- *         - bean-name: authInterceptor
- *           order: 1
+ *         - authInterceptor
  * </pre>
  *
  * <p>This will register a RestClient bean named {@code githubClient} that can be injected as:

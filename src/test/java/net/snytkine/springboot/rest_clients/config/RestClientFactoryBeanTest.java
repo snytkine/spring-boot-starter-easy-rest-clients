@@ -93,21 +93,13 @@ class RestClientFactoryBeanTest {
   }
 
   @Test
-  void shouldApplyInterceptorsInOrder() throws Exception {
+  void shouldApplyInterceptorsInDeclarationOrder() throws Exception {
     ClientHttpRequestInterceptor interceptor1 = mock(ClientHttpRequestInterceptor.class);
     ClientHttpRequestInterceptor interceptor2 = mock(ClientHttpRequestInterceptor.class);
 
-    RestClientProperties.InterceptorConfig config1 = new RestClientProperties.InterceptorConfig();
-    config1.setBeanName("interceptor1");
-    config1.setOrder(2);
-
-    RestClientProperties.InterceptorConfig config2 = new RestClientProperties.InterceptorConfig();
-    config2.setBeanName("interceptor2");
-    config2.setOrder(1);
-
-    List<RestClientProperties.InterceptorConfig> interceptors = new ArrayList<>();
-    interceptors.add(config1);
-    interceptors.add(config2);
+    List<String> interceptors = new ArrayList<>();
+    interceptors.add("interceptor1");
+    interceptors.add("interceptor2");
 
     clientConfig.setName("testClient");
     clientConfig.setBaseUrl("http://localhost:8080");
@@ -127,12 +119,9 @@ class RestClientFactoryBeanTest {
   }
 
   @Test
-  void shouldThrowExceptionWhenInterceptorBeanNameIsMissing() {
-    RestClientProperties.InterceptorConfig config = new RestClientProperties.InterceptorConfig();
-    config.setOrder(1);
-
-    List<RestClientProperties.InterceptorConfig> interceptors = new ArrayList<>();
-    interceptors.add(config);
+  void shouldThrowExceptionWhenInterceptorBeanNameIsBlank() {
+    List<String> interceptors = new ArrayList<>();
+    interceptors.add("");
 
     clientConfig.setName("testClient");
     clientConfig.setInterceptors(interceptors);
@@ -142,18 +131,14 @@ class RestClientFactoryBeanTest {
 
     assertThatThrownBy(() -> factoryBean.getObject())
         .isInstanceOf(IllegalArgumentException.class)
-        .hasMessageContaining("must have a non-empty 'bean-name' property")
+        .hasMessageContaining("must be a non-empty string")
         .hasMessageContaining("testClient");
   }
 
   @Test
   void shouldThrowExceptionWhenInterceptorNotFound() {
-    RestClientProperties.InterceptorConfig config = new RestClientProperties.InterceptorConfig();
-    config.setBeanName("missingInterceptor");
-    config.setOrder(1);
-
-    List<RestClientProperties.InterceptorConfig> interceptors = new ArrayList<>();
-    interceptors.add(config);
+    List<String> interceptors = new ArrayList<>();
+    interceptors.add("missingInterceptor");
 
     clientConfig.setName("testClient");
     clientConfig.setInterceptors(interceptors);

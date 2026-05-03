@@ -16,10 +16,8 @@ import org.springframework.test.context.TestPropertySource;
       "rest-clients.clients[0].connect-timeout=3000",
       "rest-clients.clients[0].read-timeout=5000",
       "rest-clients.clients[0].request-factory-bean=customFactory",
-      "rest-clients.clients[0].interceptors[0].bean-name=interceptor1",
-      "rest-clients.clients[0].interceptors[0].order=1",
-      "rest-clients.clients[0].interceptors[1].bean-name=interceptor2",
-      "rest-clients.clients[0].interceptors[1].order=2",
+      "rest-clients.clients[0].interceptors[0]=interceptor1",
+      "rest-clients.clients[0].interceptors[1]=interceptor2",
       "rest-clients.clients[1].name=client2",
       "rest-clients.clients[1].base-url=http://localhost:8082"
     })
@@ -41,10 +39,8 @@ class RestClientPropertiesTest {
 
     // Verify interceptors
     assertThat(client1.getInterceptors()).hasSize(2);
-    assertThat(client1.getInterceptors().get(0).getBeanName()).isEqualTo("interceptor1");
-    assertThat(client1.getInterceptors().get(0).getOrder()).isEqualTo(1);
-    assertThat(client1.getInterceptors().get(1).getBeanName()).isEqualTo("interceptor2");
-    assertThat(client1.getInterceptors().get(1).getOrder()).isEqualTo(2);
+    assertThat(client1.getInterceptors().get(0)).isEqualTo("interceptor1");
+    assertThat(client1.getInterceptors().get(1)).isEqualTo("interceptor2");
 
     // Verify second client
     RestClientProperties.ClientConfig client2 = properties.getClients().get(1);

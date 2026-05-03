@@ -22,10 +22,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *       connect-timeout: 5000
  *       read-timeout: 10000
  *       interceptors:
- *         - bean-name: loggingInterceptor
- *           order: 1
- *         - bean-name: authInterceptor
- *           order: 2
+ *         - loggingInterceptor
+ *         - authInterceptor
  *     - name: jsonPlaceholderClient
  *       base-url: https://jsonplaceholder.typicode.com
  *       request-factory-bean: customSslRequestFactory
@@ -66,7 +64,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * auto-completion and validation for these configuration properties in YAML/properties files.
  *
  * @see ClientConfig
- * @see InterceptorConfig
  * @see net.snytkine.springboot.rest_clients.config.RestClientBeanDefinitionRegistrar
  * @see net.snytkine.springboot.rest_clients.config.RestClientFactoryBean
  * @since 0.0.1
@@ -134,11 +131,9 @@ public class RestClientProperties {
    *       connect-timeout: 3000
    *       read-timeout: 5000
    *       interceptors:
-   *         - bean-name: authInterceptor
-   *           order: 1
+   *         - authInterceptor
    * </pre>
    *
-   * @see InterceptorConfig
    * @see net.snytkine.springboot.rest_clients.config.RestClientFactoryBean
    */
   public static class ClientConfig {
@@ -173,11 +168,10 @@ public class RestClientProperties {
     private String requestFactoryBean;
 
     /**
-     * List of interceptor configurations to apply to this RestClient. Interceptors are applied in
-     * order based on their {@code order} property. Optional - can be empty if no interceptors are
-     * needed.
+     * Ordered list of interceptor bean names to apply to this RestClient. Interceptors are applied
+     * in the order they appear in this list. Optional - can be empty if no interceptors are needed.
      */
-    private List<InterceptorConfig> interceptors = new ArrayList<>();
+    private List<String> interceptors = new ArrayList<>();
 
     /**
      * Gets the bean name for the RestClient.
@@ -267,24 +261,24 @@ public class RestClientProperties {
     }
 
     /**
-     * Gets the list of interceptor configurations.
+     * Gets the ordered list of interceptor bean names.
      *
-     * @return the list of interceptor configurations
+     * @return the list of interceptor bean names
      */
-    public List<InterceptorConfig> getInterceptors() {
+    public List<String> getInterceptors() {
       return interceptors;
     }
 
     /**
-     * Sets the list of interceptor configurations.
+     * Sets the ordered list of interceptor bean names.
      *
-     * <p>Interceptors are applied to all requests made by this RestClient in the order specified by
-     * their {@code order} property. Each interceptor must reference an existing bean in the
-     * ApplicationContext.
+     * <p>Interceptors are applied to all requests made by this RestClient in the order they appear
+     * in this list. Each name must reference an existing {@link
+     * org.springframework.http.client.ClientHttpRequestInterceptor} bean in the ApplicationContext.
      *
-     * @param interceptors the list of interceptor configurations (optional)
+     * @param interceptors the ordered list of interceptor bean names (optional)
      */
-    public void setInterceptors(List<InterceptorConfig> interceptors) {
+    public void setInterceptors(List<String> interceptors) {
       this.interceptors = interceptors;
     }
 
@@ -317,138 +311,6 @@ public class RestClientProperties {
      */
     public void setRequestFactoryBean(String requestFactoryBean) {
       this.requestFactoryBean = requestFactoryBean;
-    }
-  }
-
-  /**
-   * Configuration for a single interceptor to be applied to a RestClient.
-   *
-   * <p>Interceptors allow you to intercept and modify HTTP requests and responses, or add
-   * cross-cutting concerns such as logging, authentication, metrics, or error handling. Each
-   * InterceptorConfig references an existing {@link
-   * org.springframework.http.client.ClientHttpRequestInterceptor} bean by name and specifies its
-   * execution order.
-   *
-   * <p><b>Required Properties:</b>
-   *
-   * <ul>
-   *   <li>{@code bean-name} - The name of a ClientHttpRequestInterceptor bean in the
-   *       ApplicationContext (required, non-empty)
-   * </ul>
-   *
-   * <p><b>Optional Properties:</b>
-   *
-   * <ul>
-   *   <li>{@code order} - The execution order (lower values execute first, default:
-   *       Integer.MAX_VALUE)
-   * </ul>
-   *
-   * <p><b>Execution Order:</b>
-   *
-   * <p>Interceptors are executed in ascending order based on their {@code order} value. Lower
-   * values have higher priority and execute first in the request chain. Interceptors without an
-   * explicit order are assigned {@link Integer#MAX_VALUE}, placing them last.
-   *
-   * <p>For example, with this configuration:
-   *
-   * <pre>
-   * interceptors:
-   *   - bean-name: loggingInterceptor
-   *     order: 1
-   *   - bean-name: authInterceptor
-   *     order: 2
-   *   - bean-name: metricsInterceptor
-   *     # no order specified, defaults to Integer.MAX_VALUE
-   * </pre>
-   *
-   * <p>The execution order will be: loggingInterceptor (1) → authInterceptor (2) →
-   * metricsInterceptor (MAX_VALUE)
-   *
-   * <p><b>Creating Interceptor Beans:</b>
-   *
-   * <p>Interceptors must be registered as Spring beans that implement {@link
-   * org.springframework.http.client.ClientHttpRequestInterceptor}:
-   *
-   * <pre>
-   * {@code @Component("loggingInterceptor")}
-   * public class LoggingInterceptor implements ClientHttpRequestInterceptor {
-   *   {@code @Override}
-   *   public ClientHttpResponse intercept(
-   *       HttpRequest request, byte[] body, ClientHttpRequestExecution execution)
-   *       throws IOException {
-   *     // Log request details
-   *     log.info("Request: {} {}", request.getMethod(), request.getURI());
-   *     // Execute the request
-   *     ClientHttpResponse response = execution.execute(request, body);
-   *     // Log response details
-   *     log.info("Response: {}", response.getStatusCode());
-   *     return response;
-   *   }
-   * }
-   * </pre>
-   *
-   * @see org.springframework.http.client.ClientHttpRequestInterceptor
-   * @see net.snytkine.springboot.rest_clients.config.RestClientFactoryBean#resolveInterceptors()
-   */
-  public static class InterceptorConfig {
-
-    /**
-     * The name of the ClientHttpRequestInterceptor bean to apply. This bean must exist in the
-     * Spring ApplicationContext. Required - must be non-empty.
-     */
-    private String beanName;
-
-    /**
-     * The execution order for this interceptor. Lower values have higher priority and execute first
-     * in the request chain. Optional - if not specified, defaults to Integer.MAX_VALUE (lowest
-     * priority, executes last).
-     */
-    private Integer order;
-
-    /**
-     * Gets the bean name of the interceptor.
-     *
-     * @return the bean name
-     */
-    public String getBeanName() {
-      return beanName;
-    }
-
-    /**
-     * Sets the bean name of the ClientHttpRequestInterceptor to apply.
-     *
-     * <p>The bean with this name must exist in the ApplicationContext and implement {@link
-     * org.springframework.http.client.ClientHttpRequestInterceptor}.
-     *
-     * @param beanName the bean name (required, must be non-empty)
-     */
-    public void setBeanName(String beanName) {
-      this.beanName = beanName;
-    }
-
-    /**
-     * Gets the execution order of this interceptor.
-     *
-     * @return the order value, or null if not specified
-     */
-    public Integer getOrder() {
-      return order;
-    }
-
-    /**
-     * Sets the execution order for this interceptor.
-     *
-     * <p>Interceptors are executed in ascending order. Lower values have higher priority and
-     * execute first. For example, an interceptor with order=1 will execute before an interceptor
-     * with order=2.
-     *
-     * <p>If not specified, the interceptor is assigned {@link Integer#MAX_VALUE}, placing it last
-     * in the execution chain.
-     *
-     * @param order the execution order (optional, defaults to Integer.MAX_VALUE)
-     */
-    public void setOrder(Integer order) {
-      this.order = order;
     }
   }
 }

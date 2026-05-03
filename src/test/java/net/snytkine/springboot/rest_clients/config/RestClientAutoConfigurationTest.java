@@ -71,8 +71,7 @@ class RestClientAutoConfigurationTest {
         .withPropertyValues(
             "rest-clients.clients[0].name=clientWithInterceptor",
             "rest-clients.clients[0].base-url=http://localhost:8080",
-            "rest-clients.clients[0].interceptors[0].bean-name=testInterceptor",
-            "rest-clients.clients[0].interceptors[0].order=1")
+            "rest-clients.clients[0].interceptors[0]=testInterceptor")
         .run(
             context -> {
               assertThat(context).hasBean("clientWithInterceptor");

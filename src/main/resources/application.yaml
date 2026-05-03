@@ -9,5 +9,4 @@ rest-clients:
     connect-timeout: 5000
     read-timeout: 10000
     interceptors:
-    - bean-name: "loggingInterceptor"
-      order: 1
+    - "loggingInterceptor"

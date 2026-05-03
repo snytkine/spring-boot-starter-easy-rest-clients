@@ -74,12 +74,9 @@ public class UserService {
 | `request-factory-bean` | String | No | - | Custom `ClientHttpRequestFactory` bean name |
 | `interceptors` | List | No | - | List of interceptor configurations |
 
-### Interceptor Configuration Properties
+### Interceptor Configuration
 
-| Property | Type | Required | Description |
-|----------|------|----------|-------------|
-| `bean-name` | String | Yes | Name of the interceptor bean |
-| `order` | Integer | No | Execution order (lower values execute first) |
+The `interceptors` property is a list of interceptor bean names (strings). Interceptors are applied in the order they are listed.
 
 ## Advanced Usage
 
@@ -134,13 +131,12 @@ rest-clients:
     - name: userServiceClient
       base-url: https://api.example.com/users
       interceptors:
-        - bean-name: loggingInterceptor
-          order: 1
+        - loggingInterceptor
 ```
 
-### Multiple Interceptors with Ordering
+### Multiple Interceptors
 
-Interceptors are executed in order based on the `order` property (lower values execute first):
+Interceptors are applied in the order they are listed:
 
 ```java
 @Component("authInterceptor")
@@ -168,10 +164,8 @@ rest-clients:
     - name: secureApiClient
       base-url: https://secure-api.example.com
       interceptors:
-        - bean-name: authInterceptor
-          order: 1      # Executes first (adds auth header)
-        - bean-name: loggingInterceptor
-          order: 2      # Executes second (logs with auth header)
+        - authInterceptor      # Executes first (adds auth header)
+        - loggingInterceptor   # Executes second (logs with auth header)
 ```
 
 ### Custom Request Factory for SSL
@@ -331,17 +325,14 @@ rest-clients:
       connect-timeout: 5000
       read-timeout: 10000
       interceptors:
-        - bean-name: authInterceptor
-          order: 1
-        - bean-name: loggingInterceptor
-          order: 2
+        - authInterceptor
+        - loggingInterceptor
 
     - name: securePaymentClient
       base-url: https://payments.example.com/api
       request-factory-bean: customSslRequestFactory
       interceptors:
-        - bean-name: loggingInterceptor
-          order: 1
+        - loggingInterceptor
 
 logging:
   level:
@@ -425,7 +416,7 @@ public class GitHubService {
 The library validates configuration at startup and will throw exceptions if:
 
 - A client configuration is missing the required `name` property
-- An interceptor configuration is missing the required `bean-name` property
+- An interceptor bean name in the list is null or blank
 - A specified interceptor bean cannot be found in the ApplicationContext
 - A specified `request-factory-bean` cannot be found in the ApplicationContext
 
