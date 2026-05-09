@@ -14,13 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.snytkine.springboot.rest_clients.config;
+package io.github.snytkine.rest_clients.config;
 
+import io.github.snytkine.rest_clients.config.properties.RestClientProperties;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import net.snytkine.springboot.rest_clients.config.properties.RestClientProperties;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.FactoryBean;

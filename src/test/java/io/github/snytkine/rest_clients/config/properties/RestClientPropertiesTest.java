@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.snytkine.springboot.rest_clients.config.properties;
+package io.github.snytkine.rest_clients.config.properties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

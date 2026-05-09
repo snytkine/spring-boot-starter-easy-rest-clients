@@ -14,12 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.snytkine.springboot.rest_clients.config;
+package io.github.snytkine.rest_clients.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.github.snytkine.rest_clients.config.properties.RestClientProperties;
 import java.io.IOException;
-import net.snytkine.springboot.rest_clients.config.properties.RestClientProperties;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;

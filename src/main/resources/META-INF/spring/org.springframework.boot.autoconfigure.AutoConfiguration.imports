@@ -1,1 +1,1 @@
-net.snytkine.springboot.rest_clients.config.RestClientAutoConfiguration
+io.github.snytkine.rest_clients.config.RestClientAutoConfiguration

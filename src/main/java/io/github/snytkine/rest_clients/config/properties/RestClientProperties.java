@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.snytkine.springboot.rest_clients.config.properties;
+package io.github.snytkine.rest_clients.config.properties;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +71,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * <p><b>Bean Registration:</b>
  *
  * <p>These properties are processed by {@link
- * net.snytkine.springboot.rest_clients.config.RestClientBeanDefinitionRegistrar} during the Spring
+ * io.github.snytkine.rest_clients.config.RestClientBeanDefinitionRegistrar} during the Spring
  * context initialization phase to dynamically register RestClient beans.
  *
  * <p><b>IDE Support:</b>
@@ -80,8 +80,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * auto-completion and validation for these configuration properties in YAML/properties files.
  *
  * @see ClientConfig
- * @see net.snytkine.springboot.rest_clients.config.RestClientBeanDefinitionRegistrar
- * @see net.snytkine.springboot.rest_clients.config.RestClientFactoryBean
+ * @see io.github.snytkine.rest_clients.config.RestClientBeanDefinitionRegistrar
+ * @see io.github.snytkine.rest_clients.config.RestClientFactoryBean
  * @since 0.0.1
  */
 @ConfigurationProperties(prefix = "rest-clients")
@@ -150,7 +150,7 @@ public class RestClientProperties {
    *         - authInterceptor
    * </pre>
    *
-   * @see net.snytkine.springboot.rest_clients.config.RestClientFactoryBean
+   * @see io.github.snytkine.rest_clients.config.RestClientFactoryBean
    */
   public static class ClientConfig {
 

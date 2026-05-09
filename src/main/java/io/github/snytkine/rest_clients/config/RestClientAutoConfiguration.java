@@ -14,9 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.snytkine.springboot.rest_clients.config;
+package io.github.snytkine.rest_clients.config;
 
-import net.snytkine.springboot.rest_clients.config.properties.RestClientProperties;
+import io.github.snytkine.rest_clients.config.properties.RestClientProperties;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Import;

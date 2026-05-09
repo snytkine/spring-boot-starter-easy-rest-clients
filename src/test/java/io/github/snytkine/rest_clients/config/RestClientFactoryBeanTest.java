@@ -14,16 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.snytkine.springboot.rest_clients.config;
+package io.github.snytkine.rest_clients.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import io.github.snytkine.rest_clients.config.properties.RestClientProperties;
 import java.util.ArrayList;
 import java.util.List;
-import net.snytkine.springboot.rest_clients.config.properties.RestClientProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.BeanCreationException;
