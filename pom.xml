@@ -23,7 +23,7 @@
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
     <version>4.0.6</version>
-    <relativePath />
+    <relativePath/>
     <!-- lookup parent from repository -->
   </parent>
   <groupId>net.snytkine.springboot</groupId>
@@ -110,9 +110,9 @@
               <version>1.24.0</version>
               <style>GOOGLE</style>
             </googleJavaFormat>
-            <importOrder />
-            <removeUnusedImports />
-            <formatAnnotations />
+            <importOrder/>
+            <removeUnusedImports/>
+            <formatAnnotations/>
           </java>
           <pom>
             <sortPom>
@@ -127,7 +127,7 @@
               <include>src/**/*.yml</include>
               <include>src/**/*.yaml</include>
             </includes>
-            <jackson />
+            <jackson/>
           </yaml>
         </configuration>
         <executions>
