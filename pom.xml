@@ -1,4 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright 2026 - 2026 Dmitri Snytkine. All rights reserved.
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+        Unless required by applicable law or agreed to in writing, software
+        distributed under the License is distributed on an "AS IS" BASIS,
+        WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+
+        See the License for the specific language governing permissions and
+        limitations under the License.
+
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
@@ -9,23 +27,44 @@
     <!-- lookup parent from repository -->
   </parent>
   <groupId>net.snytkine.springboot</groupId>
-  <artifactId>rest-clients</artifactId>
+  <artifactId>spring-boot-starter-easy-rest-clients</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name/>
-  <description/>
-  <url/>
+  <packaging>jar</packaging>
+  <name>Spring Boot Starter Easy REST Clients</name>
+  <description>A Spring Boot starter library that enables declarative configuration of multiple RestClient instances through YAML configuration files.</description>
+  <url>https://github.com/snytkine/spring-boot-starter-easy-rest-clients</url>
+  <inceptionYear>2026</inceptionYear>
   <licenses>
-    <license/>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
   </licenses>
   <developers>
-    <developer/>
+    <developer>
+      <id>snytkine</id>
+      <name>Dmitri Snytkine</name>
+      <email>d.snytkine@gmail.com</email>
+      <url>https://github.com/snytkine</url>
+    </developer>
   </developers>
   <scm>
-    <connection/>
-    <developerConnection/>
-    <tag/>
-    <url/>
+    <connection>scm:git:https://github.com/snytkine/spring-boot-starter-easy-rest-clients.git</connection>
+    <developerConnection>scm:git:https://github.com/snytkine/spring-boot-starter-easy-rest-clients.git</developerConnection>
+    <tag>HEAD</tag>
+    <url>https://github.com/snytkine/spring-boot-starter-easy-rest-clients</url>
   </scm>
+  <distributionManagement>
+    <repository>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
   <properties>
     <java.version>21</java.version>
     <spotless.version>2.43.0</spotless.version>
@@ -98,6 +137,30 @@
         </executions>
       </plugin>
       <plugin>
+        <groupId>com.mycila</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <version>3.0</version>
+        <configuration>
+          <header>${project.basedir}/src/main/resources/license-header.txt</header>
+          <includes>
+            <include>**/*.java</include>
+            <include>**/*.xml</include>
+            <include>**/*.properties</include>
+          </includes>
+          <properties>
+            <currentYear>2026</currentYear>
+          </properties>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>format</goal>
+            </goals>
+            <phase>initialize</phase>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <executions>
@@ -138,6 +201,56 @@
                 </path>
               </annotationProcessorPaths>
             </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+            <phase>verify</phase>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <doclint>none</doclint>
+        </configuration>
+        <executions>
+          <execution>
+            <id>attach-javadocs</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <autoVersionSubmodules>true</autoVersionSubmodules>
+          <useReleaseProfile>false</useReleaseProfile>
+          <releaseProfiles>release</releaseProfiles>
+          <goals>deploy</goals>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>
@@ -188,6 +301,16 @@
         </executions>
       </plugin>
       <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <serverId>ossrh</serverId>
+          <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+          <autoReleaseAfterClose>true</autoReleaseAfterClose>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
@@ -196,5 +319,12 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>release</id>
+      <!-- Add your release profile configuration here -->
+    </profile>
+  </profiles>
 
 </project>
