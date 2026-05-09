@@ -218,7 +218,7 @@
           <autoVersionSubmodules>true</autoVersionSubmodules>
           <useReleaseProfile>false</useReleaseProfile>
           <releaseProfiles>release</releaseProfiles>
-          <goals>deploy</goals>
+          <goals>spotless:apply deploy</goals>
           <preparationGoals>clean</preparationGoals>
         </configuration>
       </plugin>
