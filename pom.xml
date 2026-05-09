@@ -28,7 +28,7 @@
   </parent>
   <groupId>net.snytkine.springboot</groupId>
   <artifactId>spring-boot-starter-easy-rest-clients</artifactId>
-  <version>0.0.2</version>
+  <version>0.0.3-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Spring Boot Starter Easy REST Clients</name>
   <description>A Spring Boot starter library that enables declarative configuration of multiple RestClient instances through YAML configuration files.</description>
@@ -52,7 +52,7 @@
   <scm>
     <connection>scm:git:https://github.com/snytkine/spring-boot-starter-easy-rest-clients.git</connection>
     <developerConnection>scm:git:https://github.com/snytkine/spring-boot-starter-easy-rest-clients.git</developerConnection>
-    <tag>spring-boot-starter-easy-rest-clients-0.0.2</tag>
+    <tag>spring-boot-starter-easy-rest-clients-0.0.1</tag>
     <url>https://github.com/snytkine/spring-boot-starter-easy-rest-clients</url>
   </scm>
   <properties>
